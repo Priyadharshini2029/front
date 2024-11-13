@@ -30,7 +30,7 @@ const Register: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, email, password: hashedPassword }), // Send hashed password
+        body: JSON.stringify({ name, email, password }), // Send hashed password
       });
 
       if (!response.ok) {
