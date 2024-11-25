@@ -1,46 +1,100 @@
 import React from "react";
-import { useOrderContext } from "./OrderProvider/orderContext"; // Import useOrderContext
+import { useOrderContext } from "../OrderProvider/orderContext";
 import { useRouter } from "next/router";
 
+// Unified and consistent Order type
+interface OrderItem {
+  itemName: string;
+  category: string;
+  price: number;
+  quantity: number;
+}
+
+interface Order {
+  items: OrderItem[];
+  totalprice?: number;
+  name: string;
+  mobilenumber: string; // Always use string for phone numbers
+}
+
 const OrderDetails: React.FC = () => {
-  const { orders, setOrders, name, setName, mobile, setMobile } = useOrderContext(); // Access context
+  const {
+    orders = [],
+    setOrders,
+    name = "",
+    setName,
+    mobile = "",
+    setMobile,
+  } = useOrderContext();
   const router = useRouter();
 
-  const calculateTotalPrice = () => {
-    return orders.reduce((total, order) => {
-      return total + order.items.reduce((subTotal, item) => subTotal + item.price * item.quantity, 0);
+  // Calculate total price
+  const calculateTotalPrice = (): number => {
+    return orders.reduce<number>((total, order) => {
+      const orderTotal = order.items.reduce<number>(
+        (subTotal, item) => subTotal + item.price * item.quantity,
+        0
+      );
+      return total + orderTotal;
     }, 0);
   };
 
-  const handleQuantityChange = (orderIndex: number, itemIndex: number, change: number) => {
+  // Handle quantity change
+  const handleQuantityChange = (orderIndex: number, itemIndex: number, change: number): void => {
     const updatedOrders = [...orders];
     const selectedItem = updatedOrders[orderIndex].items[itemIndex];
-
     const updatedQuantity = selectedItem.quantity + change;
 
     if (updatedQuantity > 0) {
       selectedItem.quantity = updatedQuantity;
-      setOrders(updatedOrders); // Update the context
+      setOrders(updatedOrders);
     }
   };
 
-  const handleBackToMenu = () => {
-    router.push("/orderList"); // Navigate back to the menu
+  // Navigate back to the menu
+  const handleBackToMenu = (): void => {
+    router.push("/Orders/orderList");
   };
 
-  const handleConfirmOrder = () => {
-    alert("Order confirmed successfully!");
-    router.push("/orderList"); // Redirect to the home page or confirmation page
+  // Confirm the order
+  const handleConfirmOrder = async (): Promise<void> => {
+    if (!name || !mobile) {
+      alert("Please enter your name and mobile number before confirming the order.");
+      return;
+    }
+
+    const orderPayload = {
+      items: orders.flatMap((order) => order.items),
+      name,
+      mobilenumber: mobile,
+    };
+
+    try {
+      const response = await fetch("http://localhost:5000/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderPayload),
+      });
+
+      if (!response.ok) throw new Error("Failed to place the order");
+      alert("Order confirmed successfully!");
+      router.push("/Orders/orderList");
+    } catch (error) {
+      console.error("Error:", error);
+      alert("There was an issue confirming your order. Please try again.");
+    }
   };
 
   return (
     <div className="p-8">
       <h2 className="text-2xl font-bold mb-6 text-center">Order Details</h2>
 
- {/* Name and Mobile input fields */}
- <div className="flex justify-center mb-6 space-x-4">
+      {/* Input fields */}
+      <div className="flex justify-center mb-6 space-x-4">
         <div>
-          <label htmlFor="name" className="block font-medium text-lg mb-2">Name:</label>
+          <label htmlFor="name" className="block font-medium text-lg mb-2">
+            Name:
+          </label>
           <input
             type="text"
             id="name"
@@ -51,36 +105,32 @@ const OrderDetails: React.FC = () => {
           />
         </div>
         <div>
-          <label htmlFor="mobile" className="block font-medium text-lg mb-2">Mobile Number:</label>
+          <label htmlFor="mobile" className="block font-medium text-lg mb-2">
+            Mobile Number:
+          </label>
           <input
             type="text"
             id="mobile"
             value={mobile}
-            onChange={(e) => setMobile(e.target.value)}
+            onChange={(e) => setMobile(Number(e.target.value))}
             placeholder="Enter your mobile number"
             className="border border-gray-300 rounded-md p-2 w-60 text-center"
           />
         </div>
       </div>
+
       {/* Order Summary */}
       <div className="border border-gray-300 p-6 rounded-lg shadow-lg mb-6">
         <h3 className="text-xl font-semibold mb-4">Order Summary</h3>
-        <p className="mb-2">
-          <strong>Name:</strong> {name}
-        </p>
-        <p className="mb-2">
-          <strong>Mobile:</strong> {mobile}
-        </p>
-
         {orders.length > 0 ? (
           <div>
-            <h4 className="text-lg font-semibold mt-4 mb-2">Ordered Items:</h4>
             <ul className="list-disc list-inside space-y-4">
               {orders.map((order, orderIndex) =>
                 order.items.map((item, itemIndex) => (
                   <li key={`${orderIndex}-${itemIndex}`} className="flex justify-between items-center">
                     <div>
-                      <span>{item.itemName}</span> <br />
+                      <span>{item.itemName}</span>
+                      <br />
                       <span className="text-sm text-gray-500">Category: {item.category}</span>
                     </div>
                     <div className="flex items-center space-x-2">

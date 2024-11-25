@@ -45,11 +45,21 @@ const Login = () => {
       if (!data.customer.approved) {
         throw new Error("Account is not approved yet.");
       }
+      localStorage.setItem("Myhotelrole", data.customer.rolehotel)
+      if(data.customer.rolehotel !=="Admin"){
+        setSuccess("Login successful!");
+        setTimeout(() => {
+          router.push("/profile");
+        }, 3000);
+      }
+      else{
+        setSuccess("Login successful!");
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 3000);
+      }
       // Successful login
-      setSuccess("Login successful!");
-      setTimeout(() => {
-        router.push("/dashboard");
-      }, 3000);
+     
       setError("");
 
       console.log("Login successful:", data);

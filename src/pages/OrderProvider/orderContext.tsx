@@ -1,30 +1,36 @@
-import React, { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
 interface OrderItem {
-  items: {
-    itemName: string;
-    category: string;
-    price: number;
-    quantity: number;
-  }[];
-  totalprice: number;
-  name: string;
-  mobilenumber: string;
+  category: string;
+  itemName: string;
+  price: number;
+  quantity: number;
 }
 
-interface OrderContextProps {
-  selectedItem: OrderItem["items"][0] | null;
-  setSelectedItem: (item: OrderItem["items"][0] | null) => void;
-  orders: OrderItem[];
-  setOrders: (orders: OrderItem[]) => void;
-  addOrder: (order: OrderItem) => void;
-  name: string;
-  setName: (name: string) => void;
-  mobile: string;
-  setMobile: (mobile: string) => void;
+interface Order extends OrderItem {
+  totalPrice:number;
+  items: OrderItem[]; // An array of items in the order
+  orderId?: string; // Optional: Order ID
+  orderedAt?: Date; // Optional: Date of order
+  status?: string; // Optional: Status of the order
+  name: string; // Required: Customer's name
+  mobile: number; // Required: Customer's mobile number
 }
 
-const OrderContext = createContext<OrderContextProps | undefined>(undefined);
+// Updated OrderContextType to reflect the changes
+interface OrderContextType {
+  selectedItem: Order | null; // Represents a single order, not just an order item
+  setSelectedItem: (item: Order | null) => void;
+  orders: Order[]; // List of orders
+  setOrders: React.Dispatch<React.SetStateAction<Order[]>>; // Updated to reflect correct type
+  addOrder: (order: Order) => void; // Function to add an order
+  name: string; // Customer's name
+  setName: (name: string) => void; // Setter for customer's name
+  mobile: number; // Customer's mobile number
+  setMobile: (mobile: number) => void; // Setter for customer's mobile number
+}
+
+const OrderContext = createContext<OrderContextType | undefined>(undefined);
 
 export const useOrderContext = () => {
   const context = useContext(OrderContext);
@@ -35,37 +41,30 @@ export const useOrderContext = () => {
 };
 
 export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [selectedItem, setSelectedItem] = useState<OrderItem["items"][0] | null>(null);
-  const [orders, setOrders] = useState<OrderItem[]>([]);
-  const [name, setName] = useState("");
-  const [mobile, setMobile] = useState("");
+  const [selectedItem, setSelectedItem] = useState<Order | null>(null); // Order is now the full order, not just an item
+  const [orders, setOrders] = useState<Order[]>([]); // List of all orders
+  const [name, setName] = useState<string>(""); // Customer's name
+  const [mobile, setMobile] = useState<number>(0); // Customer's mobile number
 
-  const addOrder = async (order: OrderItem) => {
+  const addOrder = (order: Order) => {
     const updatedOrders = [...orders, order];
     setOrders(updatedOrders);
-
-    try {
-      const response = await fetch("http://localhost:5000/api/orders", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedOrders), // Send updated orders
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update orders in the backend");
-      }
-
-      const data = await response.json();
-      console.log("Orders successfully updated:", data);
-    } catch (error) {
-      console.error("Error updating orders:", error);
-    }
   };
 
   return (
-    <OrderContext.Provider value={{selectedItem,setSelectedItem,orders,setOrders,addOrder,name,setName,mobile,setMobile,}}>
+    <OrderContext.Provider
+      value={{
+        selectedItem,
+        setSelectedItem,
+        orders,
+        setOrders,
+        addOrder,
+        name,
+        setName,
+        mobile,
+        setMobile,
+      }}
+    >
       {children}
     </OrderContext.Provider>
   );
