@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useOrderContext } from "../OrderProvider/orderContext";
 import router from "next/router";
-import Sidebar from "@/Components/Sidebar";
+
 
 interface MenuItem {
   _id: string;
@@ -105,7 +105,7 @@ const OrderList: React.FC = () => {
 
   return (
     <>
-      <Sidebar />
+     
       <div className="p-4">
         <div className="flex flex-col items-center ml-32 w-full justify-center min-h-screen bg-gray-100">
           <h2 className="text-2xl font-semibold text-purple-800 text-center mb-6">

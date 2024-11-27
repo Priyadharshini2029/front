@@ -2,7 +2,6 @@ import React from "react";
 import { useOrderContext } from "../OrderProvider/orderContext";
 import { useRouter } from "next/router";
 
-// Unified and consistent Order type
 interface OrderItem {
   itemName: string;
   category: string;
@@ -12,9 +11,11 @@ interface OrderItem {
 
 interface Order {
   items: OrderItem[];
+  _id?: string;
   totalprice?: number;
   name: string;
-  mobilenumber: string; // Always use string for phone numbers
+  mobile: number;
+  table: number;
 }
 
 const OrderDetails: React.FC = () => {
@@ -25,6 +26,7 @@ const OrderDetails: React.FC = () => {
     setName,
     mobile = "",
     setMobile,
+    table = "",
   } = useOrderContext();
   const router = useRouter();
 
@@ -40,7 +42,11 @@ const OrderDetails: React.FC = () => {
   };
 
   // Handle quantity change
-  const handleQuantityChange = (orderIndex: number, itemIndex: number, change: number): void => {
+  const handleQuantityChange = (
+    orderIndex: number,
+    itemIndex: number,
+    change: number
+  ): void => {
     const updatedOrders = [...orders];
     const selectedItem = updatedOrders[orderIndex].items[itemIndex];
     const updatedQuantity = selectedItem.quantity + change;
@@ -62,28 +68,35 @@ const OrderDetails: React.FC = () => {
       alert("Please enter your name and mobile number before confirming the order.");
       return;
     }
-
+  
     const orderPayload = {
       items: orders.flatMap((order) => order.items),
       name,
-      mobilenumber: mobile,
+      mobile: Number(mobile),
+      table: Number(table),
     };
-
+  
     try {
       const response = await fetch("http://localhost:5000/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(orderPayload),
       });
-
-      if (!response.ok) throw new Error("Failed to place the order");
+  
+      if (!response.ok) {
+        const errorDetails = await response.json();
+        console.error("API Error Details:", errorDetails);
+        throw new Error("Failed to place the order");
+      }
+  
       alert("Order confirmed successfully!");
       router.push("/Orders/orderList");
-    } catch (error) {
-      console.error("Error:", error);
+    } catch (error: any) {
+      console.error("Error confirming order:", error);
       alert("There was an issue confirming your order. Please try again.");
     }
   };
+  
 
   return (
     <div className="p-8">
@@ -109,7 +122,7 @@ const OrderDetails: React.FC = () => {
             Mobile Number:
           </label>
           <input
-            type="text"
+            type="number"
             id="mobile"
             value={mobile}
             onChange={(e) => setMobile(Number(e.target.value))}
@@ -127,11 +140,16 @@ const OrderDetails: React.FC = () => {
             <ul className="list-disc list-inside space-y-4">
               {orders.map((order, orderIndex) =>
                 order.items.map((item, itemIndex) => (
-                  <li key={`${orderIndex}-${itemIndex}`} className="flex justify-between items-center">
+                  <li
+                    key={`${orderIndex}-${itemIndex}`}
+                    className="flex justify-between items-center"
+                  >
                     <div>
                       <span>{item.itemName}</span>
                       <br />
-                      <span className="text-sm text-gray-500">Category: {item.category}</span>
+                      <span className="text-sm text-gray-500">
+                        Category: {item.category}
+                      </span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <button

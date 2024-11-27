@@ -36,17 +36,23 @@ const Sidebar: React.FC = () => {
         >
           Add Menu
         </button>}
+        {role === "Admin" && <button
+          className="w-full text-left p-3 bg-teal-800 rounded hover:bg-teal-600"
+          onClick={() => navigateTo("/Orders/orderStatus")}
+        >
+          Order Status
+        </button>}
         {role === "Chef" && <button
           className="w-full text-left p-3 bg-teal-800 rounded hover:bg-teal-600"
-          onClick={() => navigateTo("/Orders/orderList")}
+          onClick={() => navigateTo("/Orders/orderModal")}
         >
-          Menu Items
+          Orders
         </button>}
         {role === "Waiter" && <button
           className="w-full text-left p-3 bg-teal-800 rounded hover:bg-teal-600"
-          onClick={() => navigateTo("/Orders/orderDetails")}
+          onClick={() => navigateTo("/Orders/orderDelivery")}
         >
-          Orders Delivered
+          Ordered Items
         </button>}
         {role === "Admin" && <button
           className="w-full text-left p-3 bg-teal-800 rounded hover:bg-teal-600"
