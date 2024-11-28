@@ -86,21 +86,19 @@ const OrderList: React.FC = () => {
           price: currentOrder.price,
           quantity: quantity,
         },
-      ], // Add items array as required by the Order type
-      name,             // Add name (retrieved from context or form)
-      mobile,     // Add mobile number (retrieved from context or form)
+      ],
+      name,            
+      mobile,   
     };
 
     // Update the selected item in the global context
     setSelectedItem(selectedItemWithQuantity);
-
-    // Add the order to the global orders state
     setOrders((prevOrders: Order[]) => {
-      return [...prevOrders, selectedItemWithQuantity]; // Append new order to the list
+      return [...prevOrders, selectedItemWithQuantity]; 
     });
 
-    router.push("/Orders/orderDetails"); // Navigate to the order details page
-    setShowModal(false); // Close the modal
+    router.push("/Orders/orderDetails");
+    setShowModal(false);
   };
 
   return (
