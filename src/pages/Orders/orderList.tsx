@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useOrderContext } from "../OrderProvider/orderContext";
 import router from "next/router";
 
-
 interface MenuItem {
   _id: string;
   itemName: string;
@@ -24,9 +23,9 @@ interface Order extends OrderItem {
   mobile: number;
   orderId: string;
   orderedAt?: Date;
-  status: string; 
-  table:number;
-  _id:string;
+  status: string;
+  table: number;
+  _id: string;
 }
 
 const OrderList: React.FC = () => {
@@ -94,14 +93,12 @@ const OrderList: React.FC = () => {
       table: 0,
       orderId: "",
       status: "",
-      _id:"",
+      _id: "",
     };
 
     // Update the selected item in the global context
-    setSelectedItem(selectedItemWithQuantity as Order);
-    setOrders((prevOrders: Order[]) => {
-      return [...prevOrders, selectedItemWithQuantity]; 
-    });
+    setSelectedItem(selectedItemWithQuantity);
+    setOrders((prevOrders) => [...prevOrders, selectedItemWithQuantity]); // Ensure correct type
 
     router.push("/Orders/orderDetails");
     setShowModal(false);
@@ -109,7 +106,6 @@ const OrderList: React.FC = () => {
 
   return (
     <>
-     
       <div className="p-4">
         <div className="flex flex-col items-center ml-32 w-full justify-center min-h-screen bg-gray-100">
           <h2 className="text-2xl font-semibold text-purple-800 text-center mb-6">

@@ -85,7 +85,7 @@ const OrderModal: React.FC = () => {
   return (
     <>
       <Sidebar />
-      <div className="p-6 ml-56">
+      <div className="p-6 ml-64">
         <h2 className="text-2xl font-bold text-center text-purple-700 mb-6">
           ORDER DETAILS
         </h2>
