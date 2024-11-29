@@ -42,6 +42,12 @@ const Sidebar: React.FC = () => {
         >
           Order Status
         </button>}
+        {role === "Admin" && <button
+          className="w-full text-left p-3 bg-teal-800 rounded hover:bg-teal-600"
+          onClick={() => navigateTo("/profile")}
+        >
+          Profile
+        </button>}
         {role === "Chef" && <button
           className="w-full text-left p-3 bg-teal-800 rounded hover:bg-teal-600"
           onClick={() => navigateTo("/Orders/orderModal")}

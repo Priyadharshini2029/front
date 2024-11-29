@@ -22,9 +22,11 @@ interface Order extends OrderItem {
   items: OrderItem[]; // Must include items in the order
   name: string;
   mobile: number;
-  orderId?: string;
+  orderId: string;
   orderedAt?: Date;
-  status?: string; // Optional, default to "ordered"
+  status: string; 
+  table:number;
+  _id:string;
 }
 
 const OrderList: React.FC = () => {
@@ -76,9 +78,9 @@ const OrderList: React.FC = () => {
 
     // Create the order object with the required structure
     const selectedItemWithQuantity: Order = {
-      ...currentOrder,  // Spread current order (MenuItem)
-      quantity,         // Add quantity
-      totalPrice,       // Add total price
+      ...currentOrder, // Spread current order (MenuItem)
+      quantity, // Add quantity
+      totalPrice, // Add total price
       items: [
         {
           category: currentOrder.category,
@@ -87,14 +89,18 @@ const OrderList: React.FC = () => {
           quantity: quantity,
         },
       ],
-      name,            
-      mobile,   
+      name,
+      mobile,
+      table: 0,
+      orderId: "",
+      status: "",
+      _id:"",
     };
 
     // Update the selected item in the global context
     setSelectedItem(selectedItemWithQuantity as Order);
     setOrders((prevOrders: Order[]) => {
-      return [...prevOrders, selectedItemWithQuantity as Order]; 
+      return [...prevOrders, selectedItemWithQuantity]; 
     });
 
     router.push("/Orders/orderDetails");
