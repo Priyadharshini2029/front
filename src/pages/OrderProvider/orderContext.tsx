@@ -9,7 +9,7 @@ interface OrderItem {
 
 interface Order {
   items: OrderItem[];
-  _id?: string;
+  _id: string;
   totalPrice?: number;
   name: string;
   mobile: number;

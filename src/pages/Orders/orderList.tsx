@@ -22,7 +22,7 @@ interface Order extends OrderItem {
   items: OrderItem[]; // Must include items in the order
   name: string;
   mobile: number;
-  orderId?: string; // Optional, not required here
+  orderId?: string;
   orderedAt?: Date;
   status?: string; // Optional, default to "ordered"
 }
@@ -92,9 +92,9 @@ const OrderList: React.FC = () => {
     };
 
     // Update the selected item in the global context
-    setSelectedItem(selectedItemWithQuantity);
+    setSelectedItem(selectedItemWithQuantity as Order);
     setOrders((prevOrders: Order[]) => {
-      return [...prevOrders, selectedItemWithQuantity]; 
+      return [...prevOrders, selectedItemWithQuantity as Order]; 
     });
 
     router.push("/Orders/orderDetails");
