@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 interface OrderItem {
   itemName: string;
@@ -10,11 +10,12 @@ interface OrderItem {
 interface Order {
   items: OrderItem[];
   _id: string;
-  totalPrice?: number;
+  totalPrice: number;
   name: string;
-  mobile: number;
+  mobile: string;
   table: number;
-  status:string;
+  status: string;
+  orderedAt: Date;
 }
 
 interface OrderContextType {
@@ -24,11 +25,12 @@ interface OrderContextType {
   setSelectedItem: React.Dispatch<React.SetStateAction<Order | null>>;
   name: string;
   setName: React.Dispatch<React.SetStateAction<string>>;
-  mobile: number;
-  setMobile: React.Dispatch<React.SetStateAction<number>>;
+  mobile: string;
+  setMobile: React.Dispatch<React.SetStateAction<string>>;
   table: number;
   setTable: React.Dispatch<React.SetStateAction<number>>;
-  status:string;
+  status: string;
+  setStatus: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const OrderContext = createContext<OrderContextType | undefined>(undefined);
@@ -37,9 +39,25 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedItem, setSelectedItem] = useState<Order | null>(null);
   const [name, setName] = useState<string>("");
-  const [mobile, setMobile] = useState<number>(0);
-  const [table, setTable] = useState<number>(1);
-  const[status]=useState("");
+  const [mobile, setMobile] = useState<string>("");
+  const [table, setTable] = useState<number>(0);
+  const [status, setStatus] = useState<string>("");
+
+  useEffect(() => {
+    const path = window.location.pathname;
+    const tableMatch = path.match(/table-(\d+)/);
+    if (tableMatch && tableMatch[1]) {
+      const tableNumber = parseInt(tableMatch[1], 10);
+      if (!isNaN(tableNumber)) {
+        setTable(tableNumber);
+        console.log('Table number set to:', tableNumber);
+      } else {
+        console.warn("Invalid table number in URL");
+      }
+    } else {
+      console.warn("No table number found in URL");
+    }
+  }, []);
 
   return (
     <OrderContext.Provider
@@ -55,6 +73,7 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         table,
         setTable,
         status,
+        setStatus,
       }}
     >
       {children}
@@ -69,3 +88,4 @@ export const useOrderContext = (): OrderContextType => {
   }
   return context;
 };
+

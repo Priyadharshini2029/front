@@ -1,47 +1,40 @@
-import React from "react";
-import { useOrderContext } from "../OrderProvider/orderContext";
+import React, { useEffect } from "react";
 import { useRouter } from "next/router";
-
-interface OrderItem {
-  itemName: string;
-  category: string;
-  price: number;
-  quantity: number;
-}
-
-interface Order {
-  items: OrderItem[];
-  _id?: string;
-  totalprice?: number;
-  name: string;
-  mobile: number;
-  table: number;
-}
+import { useOrderContext } from "../../OrderProvider/orderContext";
 
 const OrderDetails: React.FC = () => {
-  const {
-    orders = [],
-    setOrders,
-    name = "",
-    setName,
-    mobile = "",
-    setMobile,
-    table = "",
-  } = useOrderContext();
   const router = useRouter();
+  const {
+    orders,
+    setOrders,
+    name,
+    setName,
+    mobile,
+    setMobile,
+    table,
+    setTable,
+  } = useOrderContext();
 
-  // Calculate total price
+  useEffect(() => {
+    const path = window.location.pathname;
+    const tableMatch = path.match(/table-(\d+)/);
+    if (tableMatch && tableMatch[1]) {
+      const tableNumber = parseInt(tableMatch[1], 10);
+      if (!isNaN(tableNumber)) {
+        setTable(tableNumber);
+        console.log('Table number set to:', tableNumber);
+      } else {
+        console.warn("Invalid table number in URL");
+      }
+    } else {
+      console.warn("No table number found in URL");
+    }
+  }, [setTable]);
+
   const calculateTotalPrice = (): number => {
-    return orders.reduce<number>((total, order) => {
-      const orderTotal = order.items.reduce<number>(
-        (subTotal, item) => subTotal + item.price * item.quantity,
-        0
-      );
-      return total + orderTotal;
-    }, 0);
+    return orders.reduce((total, order) => total + order.totalPrice, 0);
   };
 
-  // Handle quantity change
   const handleQuantityChange = (
     orderIndex: number,
     itemIndex: number,
@@ -53,56 +46,61 @@ const OrderDetails: React.FC = () => {
 
     if (updatedQuantity > 0) {
       selectedItem.quantity = updatedQuantity;
+      updatedOrders[orderIndex].totalPrice = updatedOrders[orderIndex].items.reduce(
+        (total, item) => total + item.price * item.quantity,
+        0
+      );
       setOrders(updatedOrders);
     }
   };
 
-  // Navigate back to the menu
   const handleBackToMenu = (): void => {
-    router.push("/Orders/orderList");
+    router.push(`/orderList/table-${table}`);
   };
 
-  // Confirm the order
   const handleConfirmOrder = async (): Promise<void> => {
     if (!name || !mobile) {
       alert("Please enter your name and mobile number before confirming the order.");
       return;
     }
-  
+
     const orderPayload = {
       items: orders.flatMap((order) => order.items),
       name,
-      mobile: Number(mobile),
-      table: Number(table),
+      mobile,
+      table,
+      totalPrice: calculateTotalPrice(),
+      status: "Confirmed",
+      orderedAt: new Date(),
     };
-  
+
     try {
       const response = await fetch("http://localhost:5000/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(orderPayload),
       });
-  
+
       if (!response.ok) {
         const errorDetails = await response.json();
         console.error("API Error Details:", errorDetails);
         throw new Error("Failed to place the order");
       }
-  
+
       alert("Order confirmed successfully!");
-      router.push("/Orders/orderList");
+      router.push(`/orderList/table-${table}`);
     } catch (error: any) {
       console.error("Error confirming order:", error);
       alert("There was an issue confirming your order. Please try again.");
     }
   };
-  
 
   return (
     <div className="p-8">
-      <h2 className="text-2xl font-bold mb-6 text-center">Order Details</h2>
+      <h2 className="text-2xl font-bold mb-6 text-center">
+        Order Details for Table {table}
+      </h2>
 
-      {/* Input fields */}
       <div className="flex justify-center mb-6 space-x-4">
         <div>
           <label htmlFor="name" className="block font-medium text-lg mb-2">
@@ -122,17 +120,16 @@ const OrderDetails: React.FC = () => {
             Mobile Number:
           </label>
           <input
-            type="number"
+            type="tel"
             id="mobile"
             value={mobile}
-            onChange={(e) => setMobile(Number(e.target.value))}
+            onChange={(e) => setMobile(e.target.value)}
             placeholder="Enter your mobile number"
             className="border border-gray-300 rounded-md p-2 w-60 text-center"
           />
         </div>
       </div>
 
-      {/* Order Summary */}
       <div className="border border-gray-300 p-6 rounded-lg shadow-lg mb-6">
         <h3 className="text-xl font-semibold mb-4">Order Summary</h3>
         {orders.length > 0 ? (
@@ -180,7 +177,6 @@ const OrderDetails: React.FC = () => {
         )}
       </div>
 
-      {/* Action Buttons */}
       <div className="flex justify-center mt-6 space-x-4">
         <button
           onClick={handleBackToMenu}
@@ -200,3 +196,4 @@ const OrderDetails: React.FC = () => {
 };
 
 export default OrderDetails;
+

@@ -48,6 +48,12 @@ const Sidebar: React.FC = () => {
         >
           Profile
         </button>}
+        {role === "Admin" && <button
+          className="w-full text-left p-3 bg-teal-800 rounded hover:bg-teal-600"
+          onClick={() => navigateTo("/Orders/orderManagement")}
+        >
+          Order History
+        </button>}
         {role === "Chef" && <button
           className="w-full text-left p-3 bg-teal-800 rounded hover:bg-teal-600"
           onClick={() => navigateTo("/Orders/orderModal")}

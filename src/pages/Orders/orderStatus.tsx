@@ -8,6 +8,7 @@ interface OrderItem {
 }
 
 interface Order {
+  _id: string;  // Adding the _id for order reference
   name: string;
   mobile: string;
   table: string;
@@ -66,6 +67,39 @@ const OrderDetailsCard: React.FC = () => {
       </div>
     );
   }
+
+   // Mark an order as "Delivered" and remove it from the list
+   const markAsPaid = async (orderIndex: number, orderId: string) => {
+    const updatedOrders = [...orderList];
+    updatedOrders[orderIndex].status = "Paid";
+
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/orders`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({_id: orderId, status: "Paid" }),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to update order status. Please try again.");
+      }
+  
+      const updatedOrders = await response.json(); 
+      setOrderList((prevOrders) =>
+        prevOrders.map((order) =>
+          order._id === orderId ? { ...order, status: "Paid" } : order
+        )
+      );
+      alert("Order marked as Paid!");
+    } catch (error) {
+      console.error("Error marking order as paid:", error);
+      alert("Failed to update order status" );
+    }
+  };
+  
 
   return (
     <>
@@ -130,6 +164,18 @@ const OrderDetailsCard: React.FC = () => {
                     ))}
                   </ul>
                 </div>
+
+                {/* Paid Button */}
+                {order.status.toLowerCase() === "delivered" && (
+                  <div className="mt-4">
+                    <button
+                      onClick={() => markAsPaid(index, order._id)}
+                      className="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition"
+                    >
+                       Paid
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>
