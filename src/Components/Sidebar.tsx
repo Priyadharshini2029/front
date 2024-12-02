@@ -21,7 +21,7 @@ const Sidebar: React.FC = () => {
     }
     },[])
   return (
-    <div className="flex flex-col p-4 w-60 h-screen bg-teal-950 text-white fixed">
+    <div className="flex flex-col p-4 w-60 h-screen bg-teal-800 text-white fixed">
       <h2 className="text-xl font-bold mb-6">Home</h2>
       <nav className="space-y-3">
         {role === "Admin" && <button
