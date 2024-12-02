@@ -94,7 +94,7 @@ const OrderManagement: React.FC = () => {
     <div className="flex">
       <Sidebar />
       <div className="flex flex-col w-full ml-56 bg-gray-100 p-8">
-        <h2 className="text-3xl font-semibold text-center text-pink-600 mb-6">Orders Management</h2>
+        <h2 className="text-3xl font-semibold text-center text-pink-600 mb-6">ORDER HISTORY</h2>
 
         {/* Filter Section */}
         <div className="flex items-center mb-4 gap-4">
@@ -142,8 +142,8 @@ const OrderManagement: React.FC = () => {
 
         {/* Orders Table */}
         <div className="overflow-x-auto">
-          <table className="table-auto w-full bg-white shadow-md rounded-lg">
-            <thead className="bg-teal-500 text-white">
+          <table className="table-auto w-full border-4 border-black bg-white ">
+            <thead className="bg-teal-500 border-2 border-black text-white">
               <tr>
                 <th className="px-4 py-2">Order ID</th>
                 <th className="px-4 py-2">Table</th>

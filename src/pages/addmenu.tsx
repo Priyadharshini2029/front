@@ -137,13 +137,13 @@ const MenuManagement: React.FC = () => {
               );
               setMenuItems(filtered);
             }}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            className="bg-black text-white px-4 py-2 rounded hover:bg-gray-600"
           >
             Apply Filter
           </button>
           <button
             onClick={fetchMenuItems}
-            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+            className="bg-black text-white px-4 py-2 rounded hover:bg-gray-600"
           >
             Reset Filter
           </button>
