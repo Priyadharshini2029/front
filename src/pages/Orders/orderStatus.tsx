@@ -8,7 +8,7 @@ interface OrderItem {
 }
 
 interface Order {
-  _id: string;  // Adding the _id for order reference
+  _id: string;
   name: string;
   mobile: string;
   table: string;
@@ -21,9 +21,7 @@ const OrderDetailsCard: React.FC = () => {
   const [orderList, setOrderList] = useState<Order[]>([]);
   const [role, setRole] = useState<string | null>("");
 
-  // Fetch orders from the API
   useEffect(() => {
-    // Fetch the role from localStorage
     const storedRole = localStorage.getItem("Myhotelrole");
     setRole(storedRole);
 
@@ -34,20 +32,19 @@ const OrderDetailsCard: React.FC = () => {
           if (!response.ok) {
             throw new Error("Failed to fetch orders");
           }
-          const data = await response.json();
+          const data: Order[] = await response.json();
 
-          // Filter orders with status "delivered" and calculate total price
           const filteredOrders = data
-            .filter((order: any) => order.status.toLowerCase() === "delivered")
-            .map((order: any) => {
+            .filter((order: Order) => order.status.toLowerCase() === "delivered")
+            .map((order: Order) => {
               const totalPrice = order.items.reduce(
-                (sum: number, item: any) => sum + item.price * item.quantity,
+                (sum: number, item: OrderItem) => sum + item.price * item.quantity,
                 0
               );
               return { ...order, totalprice: totalPrice };
             });
 
-          setOrderList(filteredOrders); // Set the fetched and filtered orders
+          setOrderList(filteredOrders);
         } catch (error) {
           console.error("Error fetching orders:", error);
         }
@@ -57,37 +54,28 @@ const OrderDetailsCard: React.FC = () => {
     }
   }, []);
 
-  // If the user is not authorized, display a message
   if (role !== "Admin") {
     return (
       <div className="flex items-center justify-center h-screen">
-        <p className="text-red-600 font-semibold text-lg">
-          Unauthorized Access
-        </p>
+        <p className="text-red-600 font-semibold text-lg">Unauthorized Access</p>
       </div>
     );
   }
 
-   // Mark an order as "Delivered" and remove it from the list
-   const markAsPaid = async (orderIndex: number, orderId: string) => {
-    const updatedOrders = [...orderList];
-    updatedOrders[orderIndex].status = "Paid";
-
-
+  const markAsPaid = async (orderIndex: number, orderId: string) => {
     try {
       const response = await fetch(`http://localhost:5000/api/orders`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({_id: orderId, status: "Paid" }),
+        body: JSON.stringify({ _id: orderId, status: "Paid" }),
       });
-  
+
       if (!response.ok) {
         throw new Error("Failed to update order status. Please try again.");
       }
-  
-      const updatedOrders = await response.json(); 
+
       setOrderList((prevOrders) =>
         prevOrders.map((order) =>
           order._id === orderId ? { ...order, status: "Paid" } : order
@@ -96,10 +84,9 @@ const OrderDetailsCard: React.FC = () => {
       alert("Order marked as Paid!");
     } catch (error) {
       console.error("Error marking order as paid:", error);
-      alert("Failed to update order status" );
+      alert("Failed to update order status");
     }
   };
-  
 
   return (
     <>
@@ -115,7 +102,6 @@ const OrderDetailsCard: React.FC = () => {
                 key={index}
                 className="border border-gray-200 rounded-lg shadow-md p-6 bg-white"
               >
-                {/* Order Header */}
                 <div className="flex justify-between items-start border-b pb-4 mb-4">
                   <div>
                     <p className="font-bold text-lg">{order.name}</p>
@@ -142,15 +128,11 @@ const OrderDetailsCard: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Items List */}
                 <div>
                   <p className="font-medium text-gray-800 mb-3">Items</p>
                   <ul className="space-y-3">
-                    {order.items.map((item: any, itemIndex: number) => (
-                      <li
-                        key={itemIndex}
-                        className="flex justify-between items-center text-sm"
-                      >
+                    {order.items.map((item: OrderItem, itemIndex: number) => (
+                      <li key={itemIndex} className="flex justify-between items-center text-sm">
                         <div>
                           <p className="font-medium">{item.itemName}</p>
                           <p className="text-gray-500 text-xs">
@@ -165,14 +147,13 @@ const OrderDetailsCard: React.FC = () => {
                   </ul>
                 </div>
 
-                {/* Paid Button */}
                 {order.status.toLowerCase() === "delivered" && (
                   <div className="mt-4">
                     <button
                       onClick={() => markAsPaid(index, order._id)}
                       className="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition"
                     >
-                       Paid
+                      Mark as Paid
                     </button>
                   </div>
                 )}

@@ -9,7 +9,7 @@ interface Employee {
   email: string;
   mobilenumber: string;
   approved: boolean;
-  rolehotel: "Admin" | "Chef" | "Waiter" | "Customer"; // This is the string literal type
+  rolehotel: "Admin" | "Chef" | "Waiter" | "Customer"; // String literal type
 }
 
 const EmployeeTable: React.FC = () => {
@@ -24,7 +24,11 @@ const EmployeeTable: React.FC = () => {
   }, []);
 
   // Save changes (update employee approved status and role)
-  const saveChanges = async (_id: string, approved: boolean, rolehotel: "Admin" | "Chef" | "Waiter" | "Customer") => {
+  const saveChanges = async (
+    _id: string,
+    approved: boolean,
+    rolehotel: "Admin" | "Chef" | "Waiter" | "Customer"
+  ) => {
     try {
       const response = await fetch(`http://localhost:5000/api/employees/${_id}`, {
         method: "PUT",
@@ -32,7 +36,7 @@ const EmployeeTable: React.FC = () => {
         body: JSON.stringify({ approved, rolehotel }),
       });
       if (response.ok) {
-        const updatedEmployee = await response.json();
+        // Update employee data in state
         setEmployees((prevEmployees) =>
           prevEmployees.map((emp) =>
             emp._id === _id ? { ...emp, approved, rolehotel } : emp
@@ -105,7 +109,9 @@ const EmployeeTable: React.FC = () => {
                   <td className="px-4 py-3">
                     <select
                       value={employee.rolehotel}
-                      onChange={(e) => saveChanges(employee._id, employee.approved, e.target.value as "Admin" | "Chef" | "Waiter" | "Customer")}
+                      onChange={(e) =>
+                        saveChanges(employee._id, employee.approved, e.target.value as "Admin" | "Chef" | "Waiter" | "Customer")
+                      }
                       className="block w-full px-3 py-1.5 text-sm bg-white border border-gray-300 rounded-md"
                     >
                       <option value="Admin">Admin</option>

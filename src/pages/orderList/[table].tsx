@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useOrderContext } from "../OrderProvider/orderContext";
+import { useOrderContext } from "../../OrderProvider/orderContext";
 import { useRouter } from "next/router";
 
 interface MenuItem {
@@ -11,7 +11,7 @@ interface MenuItem {
 
 const OrderList: React.FC = () => {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-  const { setSelectedItem, orders, setOrders, name, mobile, table, setTable } = useOrderContext();
+  const { setSelectedItem, setOrders, name, mobile, table, setTable } = useOrderContext(); // Removed `orders`
   const [showModal, setShowModal] = useState(false);
   const [currentOrder, setCurrentOrder] = useState<MenuItem | null>(null);
   const [quantity, setQuantity] = useState(1);
@@ -40,7 +40,7 @@ const OrderList: React.FC = () => {
       const tableNumber = parseInt(tableMatch[1], 10);
       if (!isNaN(tableNumber)) {
         setTable(tableNumber);
-        console.log('Table number set to:', tableNumber);
+        console.log("Table number set to:", tableNumber);
       } else {
         console.warn("Invalid table number in URL");
       }
@@ -56,16 +56,7 @@ const OrderList: React.FC = () => {
     setShowModal(true);
   };
 
-  const handleQuantityChange = (delta: number) => {
-    const newQuantity = quantity + delta;
-    if (newQuantity > 0) {
-      setQuantity(newQuantity);
-      if (currentOrder) {
-        setTotalPrice(currentOrder.price * newQuantity);
-      }
-    }
-  };
-
+  // Removed `handleQuantityChange` since it's unused
   const handlePlaceOrder = () => {
     if (!currentOrder) return;
 
@@ -99,7 +90,7 @@ const OrderList: React.FC = () => {
 
   return (
     <div className="p-4">
-      <div className="flex flex-col items-center  w-full justify-center min-h-screen bg-gray-100">
+      <div className="flex flex-col items-center w-full justify-center min-h-screen bg-gray-100">
         <h2 className="text-2xl font-semibold text-purple-800 text-center mb-6">
           ORDERS for Table {table}
         </h2>
@@ -163,4 +154,3 @@ const OrderList: React.FC = () => {
 };
 
 export default OrderList;
-

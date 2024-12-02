@@ -1,15 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { useOrderContext } from "../OrderProvider/orderContext"; // Import your context
+import { useOrderContext } from "../../OrderProvider/orderContext";
 import Sidebar from "@/Components/Sidebar";
 
+interface OrderItem {
+  itemName: string;
+  price: number;
+  quantity: number;
+  category: string;
+}
+
+interface Order {
+  _id: string;
+  name: string;
+  mobile: string;
+  table: number;
+  status: string;
+  items: OrderItem[];
+  totalPrice: number;
+  orderedAt: string; // Changed from Date to string
+}
+
 const OrderDelivery: React.FC = () => {
-  const { orders, setOrders } = useOrderContext();
-  const [orderList, setOrderList] = useState(orders); // Local state to manage orders
+  const {setOrders } = useOrderContext();
+  const [orderList, setOrderList] = useState<Order[]>([]);
   const [role, setRole] = useState<string | null>("");
 
-  // Fetch orders and filter only "Ready" orders
   useEffect(() => {
-    // Check if the user is a waiter
     const storedRole = localStorage.getItem("Myhotelrole");
     setRole(storedRole);
 
@@ -20,21 +36,21 @@ const OrderDelivery: React.FC = () => {
           if (!response.ok) {
             throw new Error("Failed to fetch orders");
           }
-          const data = await response.json();
+          const data: Order[] = await response.json();
 
-          // Filter only "Ready" orders and calculate totalPrice
           const updatedOrders = data
-            .filter((order: any) => order.status === "Ready")
-            .map((order: any) => {
-              const totalPrice = order.items.reduce(
-                (sum: number, item: any) => sum + item.price * item.quantity,
+            .filter((order) => order.status === "Ready")
+            .map((order) => ({
+              ...order,
+              totalPrice: order.items.reduce(
+                (sum, item) => sum + item.price * item.quantity,
                 0
-              );
-              return { ...order, totalPrice };
-            });
+              ),
+              orderedAt: new Date(order.orderedAt).toISOString() // Ensure orderedAt is always a string
+            }));
 
-          setOrders(updatedOrders); // Update global context
-          setOrderList(updatedOrders); // Update local state
+          
+          setOrderList(updatedOrders);
         } catch (error) {
           console.error("Error fetching orders:", error);
         }
@@ -44,13 +60,12 @@ const OrderDelivery: React.FC = () => {
     }
   }, [setOrders]);
 
-  // Mark an order as "Delivered" and remove it from the list
   const handleDeliverOrder = async (orderIndex: number, orderId: string) => {
     const updatedOrders = [...orderList];
     updatedOrders[orderIndex].status = "Delivered";
 
     try {
-      await fetch(`http://localhost:5000/api/orders`, {
+      await fetch("http://localhost:5000/api/orders", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -58,19 +73,17 @@ const OrderDelivery: React.FC = () => {
         body: JSON.stringify({ _id: orderId, status: "Delivered" }),
       });
 
-      // Remove the delivered order from the list
       const filteredOrders = updatedOrders.filter(
         (_order, index) => index !== orderIndex
       );
 
-      setOrders(filteredOrders); // Update global context
-      setOrderList(filteredOrders); // Update local state
+      
+      setOrderList(filteredOrders);
     } catch (error) {
       console.error("Error updating order status:", error);
     }
   };
 
-  // If the user is not a waiter, block access
   if (role !== "Waiter") {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -92,10 +105,9 @@ const OrderDelivery: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
             {orderList.map((order, index) => (
               <div
-                key={index}
+                key={order._id}
                 className="border border-gray-200 rounded-lg shadow-md p-6 bg-white"
               >
-                {/* Order Header */}
                 <div className="flex justify-between items-start border-b pb-4 mb-4">
                   <div>
                     <p className="font-bold text-lg">{order.name}</p>
@@ -122,11 +134,10 @@ const OrderDelivery: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Items List */}
                 <div>
                   <p className="font-medium text-gray-800 mb-3">Items</p>
                   <ul className="space-y-3">
-                    {order.items.map((item: any, itemIndex: number) => (
+                    {order.items.map((item, itemIndex) => (
                       <li
                         key={itemIndex}
                         className="flex justify-between items-center text-sm"
@@ -134,7 +145,7 @@ const OrderDelivery: React.FC = () => {
                         <div>
                           <p className="font-medium">{item.itemName}</p>
                           <p className="text-gray-500 text-xs">
-                            {item.quantity} x Rs. {item.price}
+                            {item.quantity} x Rs. {item.price} - {item.category}
                           </p>
                         </div>
                         <p className="font-semibold">
@@ -145,10 +156,9 @@ const OrderDelivery: React.FC = () => {
                   </ul>
                 </div>
 
-                {/* Deliver Order Button */}
                 <div className="mt-4">
                   <button
-                    onClick={() => handleDeliverOrder(index, order?._id)}
+                    onClick={() => handleDeliverOrder(index, order._id)}
                     className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-400 transition"
                   >
                     Deliver Order
@@ -166,3 +176,4 @@ const OrderDelivery: React.FC = () => {
 };
 
 export default OrderDelivery;
+

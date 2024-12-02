@@ -64,8 +64,12 @@ const Register: React.FC = () => {
       setPassword("");
       setAge("");
       setMobilenumber("");
-    } catch (err: any) {
-      setError(err.message || "Registration failed");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "Registration failed");
+      } else {
+        setError("An unexpected error occurred");
+      }
     }
   };
 

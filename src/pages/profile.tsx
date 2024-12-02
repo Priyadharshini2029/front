@@ -12,7 +12,6 @@ const Profile: React.FC = () => {
     currentPassword: "",
   });
 
-  const [file, setFile] = useState<File | null>(null);
   const [profileImage, setProfileImage] = useState<string>(
     "https://t4.ftcdn.net/jpg/03/87/95/83/240_F_387958369_JYlS0tXqtdg0WktKaE8jKnjuipySwEf6.jpg"
   );
@@ -25,7 +24,6 @@ const Profile: React.FC = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
-      setFile(selectedFile);
 
       // Generate a local URL for the selected file
       const fileURL = URL.createObjectURL(selectedFile);

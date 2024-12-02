@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/router";
-import { useOrderContext } from "../../OrderProvider/orderContext";
+import { useOrderContext } from "../../../OrderProvider/orderContext";
 
 const OrderDetails: React.FC = () => {
   const router = useRouter();
@@ -22,7 +22,7 @@ const OrderDetails: React.FC = () => {
       const tableNumber = parseInt(tableMatch[1], 10);
       if (!isNaN(tableNumber)) {
         setTable(tableNumber);
-        console.log('Table number set to:', tableNumber);
+        console.log("Table number set to:", tableNumber);
       } else {
         console.warn("Invalid table number in URL");
       }
@@ -70,7 +70,7 @@ const OrderDetails: React.FC = () => {
       mobile,
       table,
       totalPrice: calculateTotalPrice(),
-      status: "Confirmed",
+      status: "",
       orderedAt: new Date(),
     };
 
@@ -89,9 +89,13 @@ const OrderDetails: React.FC = () => {
 
       alert("Order confirmed successfully!");
       router.push(`/orderList/table-${table}`);
-    } catch (error: any) {
-      console.error("Error confirming order:", error);
-      alert("There was an issue confirming your order. Please try again.");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Error confirming order:", error.message);
+        alert("There was an issue confirming your order. Please try again.");
+      } else {
+        console.error("Unknown error:", error);
+      }
     }
   };
 
@@ -196,4 +200,3 @@ const OrderDetails: React.FC = () => {
 };
 
 export default OrderDetails;
-

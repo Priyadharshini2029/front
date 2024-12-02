@@ -1,16 +1,30 @@
 import React, { useEffect, useState } from "react";
-import { useOrderContext } from "../OrderProvider/orderContext"; // Context for global orders
+import { useOrderContext } from "../../OrderProvider/orderContext"; // Context for global orders
 import Sidebar from "@/Components/Sidebar";
+
+interface OrderItem {
+  itemName: string;
+  price: number;
+  quantity: number;
+}
+
+interface Order {
+  _id: string;
+  name: string;
+  mobile: string;
+  table: number;
+  status: string;
+  items: OrderItem[];
+  totalPrice?: number;
+}
 
 const OrderModal: React.FC = () => {
   const { orders, setOrders } = useOrderContext(); // Global orders state
-  const [orderList, setOrderList] = useState(orders); // Local orders state
+  const [orderList, setOrderList] = useState<Order[]>(orders); // Local orders state
   const [role, setRole] = useState<string | null>("");
 
-  // Fetch orders and role
   useEffect(() => {
     const storedRole = localStorage.getItem("Myhotelrole");
-    console.log("Stored Role:", storedRole); // Debug role
     setRole(storedRole);
 
     if (storedRole === "Chef") {
@@ -20,22 +34,20 @@ const OrderModal: React.FC = () => {
           if (!response.ok) {
             throw new Error("Failed to fetch orders");
           }
-          const data = await response.json();
-          console.log("Fetched Orders:", data); // Debug fetched orders
+          const data: Order[] = await response.json();
 
-          // Filter "Ordered" status and calculate total price
           const filteredOrders = data
-            .filter((order: any) => order.status.toLowerCase() === "ordered")
-            .map((order: any) => {
+            .filter((order: Order) => order.status.toLowerCase() === "ordered")
+            .map((order: Order) => {
               const totalPrice = order.items.reduce(
-                (sum: number, item: any) => sum + item.price * item.quantity,
+                (sum: number, item: OrderItem) =>
+                  sum + item.price * item.quantity,
                 0
               );
               return { ...order, totalPrice };
             });
 
-          console.log("Filtered Orders:", filteredOrders); // Debug filtered orders
-          setOrders(filteredOrders); // Update global state
+          
           setOrderList(filteredOrders); // Update local state
         } catch (error) {
           console.error("Error fetching orders:", error);
@@ -46,7 +58,6 @@ const OrderModal: React.FC = () => {
     }
   }, [setOrders]);
 
-  // Update order status to "Ready" and remove from list
   const handleMarkAsReady = async (orderIndex: number, orderId: string) => {
     const updatedOrders = [...orderList];
     updatedOrders[orderIndex].status = "Ready";
@@ -60,18 +71,16 @@ const OrderModal: React.FC = () => {
         body: JSON.stringify({ _id: orderId, status: "Ready" }),
       });
 
-      // Remove the marked order from the list
       const filteredOrders = updatedOrders.filter(
         (_order, index) => index !== orderIndex
       );
-      setOrders(filteredOrders); // Update global state
-      setOrderList(filteredOrders); // Update local state
+      
+      setOrderList(filteredOrders);
     } catch (error) {
       console.error("Error updating order status:", error);
     }
   };
 
-  // Unauthorized access for non-chef users
   if (role !== "Chef") {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -96,7 +105,6 @@ const OrderModal: React.FC = () => {
                 key={index}
                 className="border border-gray-200 rounded-lg shadow-md p-6 bg-white"
               >
-                {/* Order Header */}
                 <div className="flex justify-between items-start border-b pb-4 mb-4">
                   <div>
                     <p className="font-bold text-lg">{order.name}</p>
@@ -123,11 +131,10 @@ const OrderModal: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Items List */}
                 <div>
                   <p className="font-medium text-gray-800 mb-3">Items</p>
                   <ul className="space-y-3">
-                    {order.items.map((item: any, itemIndex: number) => (
+                    {order.items.map((item: OrderItem, itemIndex: number) => (
                       <li
                         key={itemIndex}
                         className="flex justify-between items-center text-sm"
@@ -146,7 +153,6 @@ const OrderModal: React.FC = () => {
                   </ul>
                 </div>
 
-                {/* Mark as Ready Button */}
                 <div className="mt-4">
                   {order.status !== "Ready" && (
                     <button
