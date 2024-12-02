@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useOrderContext } from "../../OrderProvider/orderContext";
-import Sidebar from "@/Components/Sidebar";
+import Sidebar from "@/pages/Components/Sidebar";
 
 interface OrderItem {
   itemName: string;

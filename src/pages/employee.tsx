@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Sidebar from "@/Components/Sidebar";
+import Sidebar from "@/pages/Components/Sidebar";
 
 // Explicitly define Employee interface
 interface Employee {

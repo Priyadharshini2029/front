@@ -1,4 +1,4 @@
-import Sidebar from "@/Components/Sidebar";
+import Sidebar from "@/pages/Components/Sidebar";
 import React, { useEffect, useState } from "react";
 
 interface OrderItem {
