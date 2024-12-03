@@ -22,7 +22,7 @@ const OrderList: React.FC = () => {
   useEffect(() => {
     const fetchMenuItems = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/menus");
+        const response = await fetch("https://mongodbfood.onrender.com/api/menus");
         const data = await response.json();
         setMenuItems(data);
       } catch (error) {
@@ -76,7 +76,7 @@ const OrderList: React.FC = () => {
       mobile,
       table: table,
       orderId: "",
-      status: "Ordered",
+      status: "",
       _id: "",
       orderedAt: new Date(),
     };

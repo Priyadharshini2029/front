@@ -17,7 +17,7 @@ const EmployeeTable: React.FC = () => {
 
   // Fetch employees
   useEffect(() => {
-    fetch("http://localhost:5000/api/employees")
+    fetch("https://mongodbfood.onrender.com/api/employees")
       .then((res) => res.json())
       .then((data) => setEmployees(data))
       .catch((error) => console.error("Error fetching employees:", error));
@@ -30,7 +30,7 @@ const EmployeeTable: React.FC = () => {
     rolehotel: "Admin" | "Chef" | "Waiter" | "Customer"
   ) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/employees/${_id}`, {
+      const response = await fetch(`https://mongodbfood.onrender.com/api/employees/${_id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ approved, rolehotel }),
@@ -51,7 +51,7 @@ const EmployeeTable: React.FC = () => {
   // Delete employee
   const deleteEmployee = async (id: string) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/employees/${id}`, {
+      const response = await fetch(`https://mongodbfood.onrender.com/api/employees/${id}`, {
         method: "DELETE",
       });
       if (response.ok) {

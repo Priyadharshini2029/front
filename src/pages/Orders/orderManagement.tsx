@@ -39,7 +39,7 @@ const OrderManagement: React.FC = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/orders");
+        const response = await fetch("https://mongodbfood.onrender.com/api/orders");
         if (response.ok) {
           const data = await response.json();
           setOrders(data); // Populate orders in context

@@ -23,7 +23,7 @@ const MenuManagement: React.FC = () => {
   // Fetch all menu items
   const fetchMenuItems = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/menus");
+      const response = await fetch("https://mongodbfood.onrender.com/api/menus");
       if (!response.ok) throw new Error("Failed to fetch menu items");
       const data = await response.json();
       setMenuItems(data);
@@ -35,7 +35,7 @@ const MenuManagement: React.FC = () => {
   // Create a new menu item
   const createMenuItem = async (item: MenuItem) => {
     try {
-      const response = await fetch("http://localhost:5000/api/menus", {
+      const response = await fetch("https://mongodbfood.onrender.com/api/menus", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(item),
@@ -51,7 +51,7 @@ const MenuManagement: React.FC = () => {
   const updateMenuItem = async (menuitem: MenuItem) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/menus/${menuitem._id}`,
+        `https://mongodbfood.onrender.com/api/menus/${menuitem._id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -69,7 +69,7 @@ const MenuManagement: React.FC = () => {
   const handleDelete = async (_id: string) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/menus/${_id}`,
+        `https://mongodbfood.onrender.com/api/menus/${_id}`,
         { method: "DELETE" }
       );
       console.log("Delete item:",_id)

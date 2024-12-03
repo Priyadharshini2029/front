@@ -30,7 +30,7 @@ const OrderModal: React.FC = () => {
     if (storedRole === "Chef") {
       const fetchOrders = async () => {
         try {
-          const response = await fetch("http://localhost:5000/api/orders");
+          const response = await fetch("https://mongodbfood.onrender.com/api/orders");
           if (!response.ok) {
             throw new Error("Failed to fetch orders");
           }
@@ -63,7 +63,7 @@ const OrderModal: React.FC = () => {
     updatedOrders[orderIndex].status = "Ready";
 
     try {
-      await fetch("http://localhost:5000/api/orders", {
+      await fetch("https://mongodbfood.onrender.com/api/orders", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -28,7 +28,7 @@ const OrderDetailsCard: React.FC = () => {
     if (storedRole === "Admin") {
       const fetchOrders = async () => {
         try {
-          const response = await fetch("http://localhost:5000/api/orders");
+          const response = await fetch("https://mongodbfood.onrender.com/api/orders");
           if (!response.ok) {
             throw new Error("Failed to fetch orders");
           }
@@ -64,7 +64,7 @@ const OrderDetailsCard: React.FC = () => {
 
   const markAsPaid = async (orderIndex: number, orderId: string) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/orders`, {
+      const response = await fetch(`https://mongodbfood.onrender.com/api/orders`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
