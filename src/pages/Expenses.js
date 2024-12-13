@@ -5,6 +5,8 @@ const Expense = () => {
   const [expenses, setExpenses] = useState([]); // State for all expenses
   const [filteredExpenses, setFilteredExpenses] = useState([]); // State for filtered expenses
   const [selectedDate, setSelectedDate] = useState(""); // State for the selected date filter
+  const [selectedAmount, setSelectedAmount] = useState(""); // State for the selected amount filter
+  const [selectedCategory, setSelectedCategory] = useState(""); // State for the selected category filter
   const [selectedExpense, setSelectedExpense] = useState(null); // State for selected expense details
 
   // Fetch expenses from API
@@ -44,12 +46,24 @@ const Expense = () => {
       });
     }
 
+    // Apply amount filter
+    if (selectedAmount) {
+      filtered = filtered.filter((expense) => expense.amount === parseFloat(selectedAmount));
+    }
+
+    // Apply category filter
+    if (selectedCategory) {
+      filtered = filtered.filter((expense) => expense.category.toLowerCase() === selectedCategory.toLowerCase());
+    }
+
     setFilteredExpenses(filtered);
   };
 
   // Reset filters
   const resetFilters = () => {
     setSelectedDate(""); // Reset selected date filter
+    setSelectedAmount(""); // Reset selected amount filter
+    setSelectedCategory(""); // Reset selected category filter
     setFilteredExpenses(expenses); // Reset the filtered expenses
   };
 
@@ -68,6 +82,24 @@ const Expense = () => {
             onChange={(e) => setSelectedDate(e.target.value)}
             className="border border-gray-300 px-3 py-2 rounded-lg"
             placeholder="Select Date"
+          />
+
+          {/* Amount Filter */}
+          <input
+            type="number"
+            value={selectedAmount}
+            onChange={(e) => setSelectedAmount(e.target.value)}
+            className="border border-gray-300 px-3 py-2 rounded-lg"
+            placeholder="Amount"
+          />
+
+          {/* Category Filter */}
+          <input
+            type="text"
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="border border-gray-300 px-3 py-2 rounded-lg"
+            placeholder="Category"
           />
 
           <button
