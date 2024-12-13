@@ -17,6 +17,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/pages/addexpense.js", "src/pages/Authentication/login.jsx", "src/pages/Authentication/login.js", "src/pages/Components/Sidebar.js", "src/pages/_app.js", "src/pages/_document.js", "src/pages/dashboard.js", "src/pages/index.js", "src/pages/profile.js", "src/pages/Expenses.js"],
   "exclude": ["node_modules"]
 }
